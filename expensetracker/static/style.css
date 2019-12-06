@@ -1,0 +1,54 @@
+html body{
+  font-family: 'Montserrat', sans-serif;
+}
+
+a {
+  color: black;
+}
+
+a:hover {
+  color: #343a40;
+  text-decoration: none;
+}
+
+.everything-list p{
+  margin: 0;
+}
+
+button:hover a {
+  color: white;
+}
+
+.account-box {
+  border: 1px solid #343a40;
+  background-color: #ece8fe;
+  border-radius:.25rem;
+}
+
+.account-box a:hover {
+  color: #343a40;
+}
+
+.jumbotron {
+  border: 1px solid #343a40;
+  border-radius:.25rem;
+  background-color: #ece8fe;
+}
+
+.table {
+  border-radius:.25rem;
+
+}
+
+.sm-button {
+  border: 1px solid #343a40;
+  border-radius:.25rem;
+  padding: 4px;
+  color: black;
+}
+
+.sm-button:hover {
+  color: white;
+  background-color: #343a40;
+
+}

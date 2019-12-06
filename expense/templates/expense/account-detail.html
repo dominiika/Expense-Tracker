@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<!-- jQuery CDN -->
+    <script
+    src="https://code.jquery.com/jquery-1.12.4.min.js"
+    integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+    crossorigin="anonymous"></script>
+     <!-- highcharts CDN -->
+    <script src="https://code.highcharts.com/highcharts.src.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/heatmap.js"></script>
+    <script src="https://code.highcharts.com/modules/treemap.js"></script>
+
+    {% load chartit %}
+    {{ chart_list|load_charts:"cht" }}
+
+{% endblock %}
+
+
+{% block content %}
+<br>
+
+<div style="float: right;">
+<ul class="list-group list-group-horizontal">
+  <li class="list-group-item"><strong>Full list</strong></li>
+  <li class="list-group-item"><a href="{% url 'account-detail-divided' account.id %}">Divided list</a></li>
+</ul>
+</div>
+<br>
+<br>
+
+<div class="container">
+  <h2 class="text-center">Your {{ account.currency }} account</h2>
+</div>
+<br>
+
+<hr>
+<div class="row">
+  <div class="col-md-6">
+    <p class="float-right">Current balance:
+      {{ account.current_balance }} {{ account.currency }}
+    </p>
+  </div>
+  <div class="col-md-6">
+    <p class="float-left">Initial balance:
+      {{ account.initial_balance }} {{ account.currency }}
+    </p>
+  </div>
+</div>
+<br>
+<div id='cht'>  </div>
+
+<br>
+<div class="container jumbotron">
+
+  <h3>All incomes and spendings</h3>
+  <hr>
+  <div class="everything-list">
+    {% for item in everything %}
+    <p><strong>{{ item.date }}</strong></p>
+    {% if item.info == "Income" or item.info == "Initial" %}
+    <p>{{ item.title }}</p>
+    <p style="color: #229954;">+ {{ item.amount }} {{ item.currency }}</p>
+    <div class="row">
+      <div class="col-md-6">
+        <p>Current balance is: {{ item.current_balance }}</p>
+      </div>
+      <div class="col-md-6">
+        <a class="sm-button" style="margin-left:1em;" href="{% url 'update-income' account.id item.id %}">Edit</a>
+        <a class="sm-button" style="margin-left:1em;" href="{% url 'delete-income' account.id item.id %}"> Delete</a>
+      </div>
+    </div>
+
+    {% elif item.info == "Spending" %}
+    <p>{{ item.title }}</p>
+    <p style="color: #B8574C;">- {{ item.amount }} {{ item.currency }}</p>
+    <div class="row">
+      <div class="col-md-6">
+        <p>Current balance is: {{ item.current_balance }}</p>
+      </div>
+      <div class="col-md-6">
+        <a class="sm-button" style="margin-left:1em;" href="{% url 'update-spending' account.id item.id %}">Edit</a>
+        <a class="sm-button" style="margin-left:1em;" href="{% url 'delete-spending' account.id item.id %}"> Delete</a>
+      </div>
+    </div>
+    {% endif %}
+
+    <br>
+    {% endfor %}
+  </div>
+  <br>
+  <hr>
+  <br>
+  <div class="row container">
+
+    <div class="col-sm-6">
+      <button class="btn btn-outline-dark float-right"><a href="{% url 'create-income' account.id %}">New income</a></button>
+    </div>
+
+    <div class="col-sm-6">
+      <button class="btn btn-outline-dark float-left"><a href="{% url 'create-spending' account.id %}">New spending</a></button>
+    </div>
+
+  </div>
+  <br>
+  <br>
+  <div style="float: right;">
+    <button class="btn btn-outline-danger"><a href="{% url 'delete-account' account.id %}">Delete account</a></button>
+  </div>
+  <br>
+
+</div>
+{% endblock %}
