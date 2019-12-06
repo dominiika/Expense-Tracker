@@ -43,3 +43,9 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
+### Usage
+
+Before setting ap an account as a user, you have to add currencies as an admin. 
+You can do it by going to admin panel, then EXPENSE > Currencys > ADD CURRENCY
+
+
