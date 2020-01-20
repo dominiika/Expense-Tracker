@@ -22,7 +22,7 @@ class Account(models.Model):
 
 
 class Income(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE, default=0)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, default=0, related_name='incomes')
     date = models.DateTimeField(default=datetime.datetime.now)
     title = models.CharField(max_length=200)
     amount = models.DecimalField(max_digits=20, decimal_places=2, default=0)

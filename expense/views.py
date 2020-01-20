@@ -21,11 +21,15 @@ def create_account(request):
     context = {'form': form}
     if form.is_valid():
         obj = form.save(commit=False)
-        account = Account.objects.filter(currency=obj.currency, user=request.user)
-        if account.exists():
+        account_exists = Account.objects.filter(currency=obj.currency, user=request.user).exists()
+        if account_exists:
             context['account'] = Account.objects.filter(currency=obj.currency, user=request.user)[0]
             message = f"You already have an account in this currency! Do you want to update existing account?"
+            account = Account.objects.get(currency=obj.currency, user=request.user)
+            initial_income = list(account.incomes.all()).pop(-1)
             context['message'] = message
+            context['initial_income'] = initial_income
+            context['account'] = account
             return render(request, 'expense/create.html', context)
         else:
             obj.user = request.user

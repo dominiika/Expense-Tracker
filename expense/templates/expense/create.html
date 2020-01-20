@@ -13,15 +13,17 @@
       <br>
       <div class="row container">
         <div class="col-sm-6">
-          <button class="btn btn-primary btn-sm float-right"><a href="{% url 'update-account' account.id %}">Yes</a></button>
+          <button class="btn btn-outline-dark float-right"><a href="{% url 'update-income' account.id initial_income.id %}">Yes</a></button>
         </div>
         <div class="col-sm-6">
-          <button class="btn btn-primary btn-sm float-left"><a href="{% url 'index' %}">No</a></button>
+          <button class="btn btn-outline-dark float-left"><a href="{% url 'index' %}">No</a></button>
         </div>
       </div>
       <br>
       {% endif %}
+      {% if not initial_income %}
       <button class="btn btn-outline-dark" type="submit">Add</button>
+      {% endif %}
     </form>
   </div>
 </div>
