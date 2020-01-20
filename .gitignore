@@ -1,5 +1,6 @@
 # added by me:
-bandsite/settings/local.py
+book_database/settings/local.py
+book_database/settings/secret_key.py
 /static
 /media
 db.sqlite3
