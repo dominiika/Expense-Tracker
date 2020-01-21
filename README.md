@@ -1,5 +1,8 @@
 # Expense-Tracker
 
+You can see the app at:
+http://expensetracker-django.herokuapp.com/
+
 Expense Tracker is an application which lets the user log in and track their expenses. The app displays the expenses in a list and on a chart.
 The app uses Django_chartit to display charts.
 
