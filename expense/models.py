@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-import datetime
+from django.utils import timezone
 from django.utils.text import slugify
 
 
@@ -12,21 +12,43 @@ class Currency(models.Model):
 
 
 class Account(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='accounts')
-    current_balance = models.DecimalField(max_digits=20, decimal_places=2, default=0)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='accounts'
+    )
+    current_balance = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        default=0)
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
-    initial_balance = models.DecimalField(max_digits=20, decimal_places=2, default=0, blank=True)
+    initial_balance = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        default=0,
+        blank=True
+    )
 
     def __str__(self):
         return '{0.user} - {0.currency}'.format(self)
 
 
 class Income(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE, default=0, related_name='incomes')
-    date = models.DateTimeField(default=datetime.datetime.now)
+    account = models.ForeignKey(
+        Account,
+        on_delete=models.CASCADE,
+        default=0,
+        related_name='incomes'
+    )
+    date = models.DateTimeField(default=timezone.now)
     title = models.CharField(max_length=200)
     amount = models.DecimalField(max_digits=20, decimal_places=2, default=0)
-    current_balance = models.DecimalField(max_digits=20, decimal_places=2, blank=True, default=0)
+    current_balance = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True,
+        default=0
+    )
     slug = models.SlugField(max_length=100, blank=True, unique=True)
     info = models.CharField(max_length=10, blank=True, default="Income")
 
@@ -53,10 +75,14 @@ class Income(models.Model):
 
 class Spending(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE, default=0)
-    date = models.DateTimeField(default=datetime.datetime.now)
+    date = models.DateTimeField(default=timezone.now)
     title = models.CharField(max_length=200)
     amount = models.DecimalField(max_digits=20, decimal_places=2, default=0)
-    current_balance = models.DecimalField(max_digits=20, decimal_places=2, blank=True, default=0)
+    current_balance = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        blank=True, default=0
+    )
     slug = models.SlugField(max_length=100, blank=True, unique=True)
     info = models.CharField(max_length=10, blank=True, default="Spending")
 
@@ -83,7 +109,7 @@ class Spending(models.Model):
 
 class BalanceTracker(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE, default=0)
-    date = models.DateTimeField(default=datetime.datetime.now)
+    date = models.DateTimeField(default=timezone.now)
     amount = models.DecimalField(max_digits=20, decimal_places=2, default=0)
     slug = models.SlugField(max_length=100, unique=True, blank=True)
 
@@ -92,4 +118,3 @@ class BalanceTracker(models.Model):
 
     class Meta:
         ordering = ['-date', ]
-

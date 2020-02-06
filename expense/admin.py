@@ -21,7 +21,14 @@ class BalanceTrackerAdmin(admin.ModelAdmin):
 
 
 class IncomeAdmin(admin.ModelAdmin):
-    list_display = ('account', 'title', 'date', 'amount', 'current_balance', 'slug')
+    list_display = (
+        'account',
+        'title',
+        'date',
+        'amount',
+        'current_balance',
+        'slug'
+    )
 
     def get_queryset(self, request):
         queryset = super(IncomeAdmin, self).get_queryset(request)
@@ -30,7 +37,14 @@ class IncomeAdmin(admin.ModelAdmin):
 
 
 class SpendingAdmin(admin.ModelAdmin):
-    list_display = ('account', 'title', 'date', 'amount', 'current_balance', 'slug')
+    list_display = (
+        'account',
+        'title',
+        'date',
+        'amount',
+        'current_balance',
+        'slug'
+    )
 
     def get_queryset(self, request):
         queryset = super(SpendingAdmin, self).get_queryset(request)
@@ -52,6 +66,3 @@ admin.site.register(Income, IncomeAdmin)
 admin.site.register(Spending, SpendingAdmin)
 admin.site.register(Currency, CurrencyAdmin)
 admin.site.register(BalanceTracker, BalanceTrackerAdmin)
-
-
-

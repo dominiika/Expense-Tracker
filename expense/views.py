@@ -21,11 +21,21 @@ def create_account(request):
     context = {'form': form}
     if form.is_valid():
         obj = form.save(commit=False)
-        account_exists = Account.objects.filter(currency=obj.currency, user=request.user).exists()
+        account_exists = Account.objects.filter(
+            currency=obj.currency,
+            user=request.user
+        ).exists()
         if account_exists:
-            context['account'] = Account.objects.filter(currency=obj.currency, user=request.user)[0]
-            message = f"You already have an account in this currency! Do you want to update existing account?"
-            account = Account.objects.get(currency=obj.currency, user=request.user)
+            context['account'] = Account.objects.filter(
+                currency=obj.currency,
+                user=request.user
+            )[0]
+            message = f"You already have an account in this currency! " \
+                      f"Do you want to update existing account?"
+            account = Account.objects.get(
+                currency=obj.currency,
+                user=request.user
+            )
             initial_income = list(account.incomes.all()).pop(-1)
             context['message'] = message
             context['initial_income'] = initial_income
@@ -35,13 +45,24 @@ def create_account(request):
             obj.user = request.user
             obj.initial_balance = obj.current_balance
             obj.save()
-            new_account = Account.objects.get(currency=obj.currency, user=request.user)
-            income = Income.objects.create(account=new_account, current_balance=new_account.current_balance,
-                                           info="Initial", title="Initial balance", amount=new_account.current_balance)
+            new_account = Account.objects.get(
+                currency=obj.currency,
+                user=request.user
+            )
+            income = Income.objects.create(
+                account=new_account,
+                current_balance=new_account.current_balance,
+                info="Initial",
+                title="Initial balance",
+                amount=new_account.current_balance
+            )
             income.save()
 
-            balance_tracker = BalanceTracker.objects.create(account=new_account, amount=new_account.current_balance,
-                                                            slug=income.slug)
+            balance_tracker = BalanceTracker.objects.create(
+                account=new_account,
+                amount=new_account.current_balance,
+                slug=income.slug
+            )
         return redirect('/')
     return render(request, 'expense/create.html', context)
 
@@ -53,7 +74,9 @@ def delete_account(request, a_id):
         if request.method == 'POST':
             account.delete()
             return redirect('/')
-        context = {'account': account, 'title': f'Do you really want to remove your {account.currency} account?'}
+        context = {'account': account,
+                   'title': f'Do you really want to remove your '
+                            f'{account.currency} account?'}
         return render(request, 'expense/delete.html', context)
     else:
         raise Http404
@@ -77,10 +100,7 @@ def account_detail_divided(request, a_id):
             [{'options': {
                 'source': BalanceTracker.objects.filter(account=account)},
                 'terms': [{'date': 'date',
-                           'amount': 'amount'}]
-            },
-
-            ])
+                           'amount': 'amount'}]}, ])
 
         cht = Chart(
             datasource=balance,
@@ -109,11 +129,14 @@ def account_detail_divided(request, a_id):
                     'borderWidth': 1,
                     "backgroundColor": '#EEEEEE',
                     'shadow': True,
-                    'reversed': True}}
-        , x_sortf_mapf_mts=(None, date_short, False)
+                    'reversed': True}},
+            x_sortf_mapf_mts=(None, date_short, False)
         )
 
-        context = {'account': account, 'incomes': incomes, 'spendings': spendings, 'balance_trackers': balance_trackers,
+        context = {'account': account,
+                   'incomes': incomes,
+                   'spendings': spendings,
+                   'balance_trackers': balance_trackers,
                    'chart_list': [cht]}
         return render(request, 'expense/account-detail-divided.html', context)
     else:
@@ -162,10 +185,7 @@ def account_detail(request, a_id):
             [{'options': {
                 'source': BalanceTracker.objects.filter(account=account)},
                 'terms': [{'date': 'date',
-                           'amount': 'amount'}]
-            },
-
-            ])
+                           'amount': 'amount'}]}, ])
 
         cht = Chart(
             datasource=balance,
@@ -194,12 +214,18 @@ def account_detail(request, a_id):
                     'borderWidth': 1,
                     "backgroundColor": '#EEEEEE',
                     'shadow': True,
-                    'reversed': True}}
-        , x_sortf_mapf_mts=(None, date_short, False)
+                    'reversed': True}},
+            x_sortf_mapf_mts=(None, date_short, False)
         )
 
-        context = {'account': account, 'incomes': incomes, 'spendings': spendings, 'balance_trackers': balance_trackers,
-                   'everything': everything, 'chart_list': [cht]}
+        context = {
+            'account': account,
+            'incomes': incomes,
+            'spendings': spendings,
+            'balance_trackers': balance_trackers,
+            'everything': everything,
+            'chart_list': [cht]
+        }
         return render(request, 'expense/account-detail.html', context)
     else:
         raise Http404
@@ -217,7 +243,10 @@ def create_income(request, a_id):
         obj.current_balance = account.current_balance
         account.save()
         obj.save()
-        balance_tracker = BalanceTracker.objects.create(account=account, amount=account.current_balance, slug=obj.slug)
+        balance_tracker = BalanceTracker.objects.create(
+            account=account,
+            amount=account.current_balance,
+            slug=obj.slug)
         return redirect(f'/account-detail/{a_id}/')
     return render(request, 'expense/form.html', context)
 
@@ -226,13 +255,24 @@ def create_income(request, a_id):
 def update_income(request, a_id, i_id):
     account = Account.objects.get(pk=a_id)
     income = get_object_or_404(Income, pk=i_id)
-    balance_tracker = BalanceTracker.objects.get(account=account, slug=income.slug)
-    all_newer_trackers = BalanceTracker.objects.filter(account=account, date__gte=income.date).exclude(account=account, slug=income.slug)
+    balance_tracker = BalanceTracker.objects.get(
+        account=account,
+        slug=income.slug
+    )
+    all_newer_trackers = BalanceTracker.objects.filter(
+        account=account,
+        date__gte=income.date
+    ).exclude(account=account, slug=income.slug)
     if account.user == request.user:
         form = IncomeModelForm(request.POST or None, instance=income)
         old_income = income.amount
 
-        context = {'form': form, 'account': account, 'income': income, 'title': 'Edit your income'}
+        context = {
+            'form': form,
+            'account': account,
+            'income': income,
+            'title': 'Edit your income'
+        }
         if form.is_valid():
             obj = form.save(commit=False)
             account.current_balance -= old_income
@@ -277,12 +317,17 @@ def update_income(request, a_id, i_id):
 def delete_income(request, a_id, i_id):
     account = get_object_or_404(Account, pk=a_id)
     income = get_object_or_404(Income, pk=i_id)
-    all_newer_trackers = BalanceTracker.objects.filter(account=account, date__gte=income.date).exclude(account=account,
-                                                                                                       slug=income.slug)
+    all_newer_trackers = BalanceTracker.objects.filter(
+        account=account,
+        date__gte=income.date
+    ).exclude(account=account, slug=income.slug)
     old_income = income.amount
     if account.user == request.user:
         if request.method == 'POST':
-            balance_tracker = BalanceTracker.objects.get(account=account, slug=income.slug)
+            balance_tracker = BalanceTracker.objects.get(
+                account=account,
+                slug=income.slug
+            )
             account.current_balance -= income.amount
             account.save()
             income.delete()
@@ -304,7 +349,11 @@ def delete_income(request, a_id, i_id):
                     tracker.save()
 
             return redirect(f'/account-detail/{a_id}/')
-        context = {'account': account, 'income': income, 'title': 'Do you want to remove this income?'}
+        context = {
+            'account': account,
+            'income': income,
+            'title': 'Do you want to remove this income?'
+        }
         return render(request, 'expense/delete.html', context)
     else:
         raise Http404
@@ -322,7 +371,11 @@ def create_spending(request, a_id):
         obj.current_balance = account.current_balance
         account.save()
         obj.save()
-        balance_tracker = BalanceTracker.objects.create(account=account, amount=account.current_balance, slug=obj.slug)
+        balance_tracker = BalanceTracker.objects.create(
+            account=account,
+            amount=account.current_balance,
+            slug=obj.slug
+        )
         return redirect(f'/account-detail/{a_id}/')
     return render(request, 'expense/form.html', context)
 
@@ -331,14 +384,24 @@ def create_spending(request, a_id):
 def update_spending(request, a_id, s_id):
     account = Account.objects.get(pk=a_id)
     spending = get_object_or_404(Spending, pk=s_id)
-    balance_tracker = BalanceTracker.objects.get(account=account, slug=spending.slug)
-    all_newer_trackers = BalanceTracker.objects.filter(account=account, date__gte=spending.date).exclude(account=account,
-                                                                                                         slug=spending.slug)
+    balance_tracker = BalanceTracker.objects.get(
+        account=account,
+        slug=spending.slug
+    )
+    all_newer_trackers = BalanceTracker.objects.filter(
+        account=account,
+        date__gte=spending.date
+    ).exclude(account=account, slug=spending.slug)
     if account.user == request.user:
         form = SpendingModelForm(request.POST or None, instance=spending)
         old_spending = spending.amount
 
-        context = {'form': form, 'account': account, 'spending': spending, 'title': 'Edit your spending'}
+        context = {
+            'form': form,
+            'account': account,
+            'spending': spending,
+            'title': 'Edit your spending'
+        }
         if form.is_valid():
             obj = form.save(commit=False)
             account.current_balance += old_spending
@@ -383,12 +446,16 @@ def update_spending(request, a_id, s_id):
 def delete_spending(request, a_id, s_id):
     account = get_object_or_404(Account, pk=a_id)
     spending = get_object_or_404(Spending, pk=s_id)
-    all_newer_trackers = BalanceTracker.objects.filter(account=account, date__gte=spending.date).exclude(account=account,
-                                                                                                         slug=spending.slug)
+    all_newer_trackers = BalanceTracker.objects.filter(
+        account=account,
+        date__gte=spending.date
+    ).exclude(account=account, slug=spending.slug)
     old_spending = spending.amount
     if account.user == request.user:
         if request.method == 'POST':
-            balance_tracker = BalanceTracker.objects.get(account=account, slug=spending.slug)
+            balance_tracker = BalanceTracker.objects.get(
+                account=account,
+                slug=spending.slug)
             account.current_balance += spending.amount
             account.save()
             spending.delete()
@@ -409,7 +476,11 @@ def delete_spending(request, a_id, s_id):
                     tracker.save()
 
             return redirect(f'/account-detail/{a_id}/')
-        context = {'account': account, 'spending': spending, 'title': 'Do you want to remove this spending?'}
+        context = {
+            'account': account,
+            'spending': spending,
+            'title': 'Do you want to remove this spending?'
+        }
         return render(request, 'expense/delete.html', context)
     else:
         raise Http404
