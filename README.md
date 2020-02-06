@@ -48,7 +48,12 @@ python manage.py runserver
 
 ### Usage
 
-Before setting up an account as a user, you have to add currencies as an admin. 
+1. Before setting up an account as a user, you have to add currencies as an admin. 
 You can do it by going to admin panel, then EXPENSE > Currencys > ADD CURRENCY
 
+2. Use the following command if you want to test the application:
+
+```
+python manage.py test
+```
 
